@@ -7,14 +7,20 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chattitesti.FirestoreManager
 import com.example.chattitesti.Message
 import com.example.chattitesti.R
+import com.example.chattitesti.ui.theme.ChattitestiTheme
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -28,41 +34,50 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var messageListener: ListenerRegistration
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            ChattitestiTheme {
+                Surface {
+                    setContentView(R.layout.activity_main)
 
-        adapter = ChatAdapter()
+                    adapter = ChatAdapter()
 
-        // Käytä findViewById-metodia löytääksesi näkymät
-        messageList = findViewById(R.id.messageList)
-        sendButton = findViewById(R.id.sendButton)
-        messageInput = findViewById(R.id.messageInput)
+                    // Käytä findViewById-metodia löytääksesi näkymät
+                    messageList = findViewById(R.id.messageList)
+                    sendButton = findViewById(R.id.sendButton)
+                    messageInput = findViewById(R.id.messageInput)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        //Log.d("MainActivity", "Settings Icon Resource ID: $settingsIconResId")
-        //setSupportActionBar(toolbar)
+                    val toolbar: Toolbar = findViewById(R.id.toolbar)
+                    //Log.d("MainActivity", "Settings Icon Resource ID: $settingsIconResId")
+                    //setSupportActionBar(toolbar)
 
-        //toolbar.setNavigationIcon(R.drawable.baseline_settings_black_24)
+                    //toolbar.setNavigationIcon(R.drawable.baseline_settings_black_24)
 
-        val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
-        settingsIcon.setOnClickListener {
-            startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-        }
+                    val userName: String = setUserName()
 
-        messageList.layoutManager = LinearLayoutManager(this)
+                    val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
+                    settingsIcon.setOnClickListener {
+                        startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                    }
 
-        messageList.adapter = adapter
+                    messageList.layoutManager = LinearLayoutManager(this)
 
-        sendButton.setOnClickListener {
-            val messageText = messageInput.text.toString().trim()
-            if (messageText.isNotEmpty()) {
-                val message = Message(sender = "User", text = messageText)
-                FirestoreManager.sendMessage(message, { messageInput.text.clear() }, { /* Handle failure */ })
+                    messageList.adapter = adapter
+
+                    sendButton.setOnClickListener {
+                        val messageText = messageInput.text.toString().trim()
+                        if (messageText.isNotEmpty()) {
+                            val message = Message(sender = userName, text = messageText)
+                            FirestoreManager.sendMessage(message, { messageInput.text.clear() }, { /* Handle failure */ })
+                        }
+                    }
+
+                    setupMessageListener()
+                }
             }
         }
-
-        setupMessageListener()
     }
 
     private fun setupMessageListener() {
@@ -77,6 +92,10 @@ class MainActivity : AppCompatActivity() {
                 snapshot?.let {
                     val messages = it.toObjects(Message::class.java)
                     adapter.setMessages(messages)
+                    //Toiminto jolla automaattisesti scrollataan uusimpaan viestiin
+                    messageList.post {
+                        adapter.scrollToBottom(messageList)
+                    }
                 }
             }
     }
@@ -111,4 +130,10 @@ class SettingsActivity : AppCompatActivity() {
             // Save the notification state in SharedPreferences or relevant storage
         }
     }
+}
+
+@Composable
+fun setUserName(name: String = "User"): String {
+    return "Kevin"
+    //Column(modifier = Modifier) { }
 }

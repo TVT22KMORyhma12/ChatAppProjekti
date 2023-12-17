@@ -29,6 +29,10 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.MessageViewHolder>() {
 
     override fun getItemCount(): Int = messages.size
 
+    fun scrollToBottom(recyclerView: RecyclerView) {
+        recyclerView.scrollToPosition(itemCount -1)
+    }
+
     class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val senderTextView: TextView = itemView.findViewById(R.id.senderTextView)
         private val messageTextView: TextView = itemView.findViewById(R.id.messageTextView)
