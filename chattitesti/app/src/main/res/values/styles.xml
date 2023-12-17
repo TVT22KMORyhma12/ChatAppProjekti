@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">#FFA500</item>
+        <item name="android:titleTextAppearance">@style/CustomToolbarTitleText</item>
+    </style>
+
+    <style name="CustomToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/light_primary_color</item>
+        <item name="colorPrimaryDark">@color/light_primary_dark_color</item>
+        <item name="colorAccent">@color/light_accent_color</item>
+        <item name="toolbarStyle">@style/CustomToolbarStyle</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/dark_primary_color</item>
+        <item name="colorPrimaryDark">@color/dark_primary_dark_color</item>
+        <item name="colorAccent">@color/dark_accent_color</item>
+        <item name="toolbarStyle">@style/CustomToolbarStyle</item>
+    </style>
+</resources>
