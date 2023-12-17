@@ -77,6 +77,10 @@ class MainActivity : AppCompatActivity() {
                 snapshot?.let {
                     val messages = it.toObjects(Message::class.java)
                     adapter.setMessages(messages)
+                    //Toiminto jolla automaattisesti scrollataan uusimpaan viestiin
+                    messageList.post {
+                        adapter.scrollToBottom(messageList)
+                    }
                 }
             }
     }
