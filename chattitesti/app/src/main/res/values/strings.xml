@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">chattitesti</string>
+    <string name="settings_icon_desc">Settings Icon</string>
 </resources>
