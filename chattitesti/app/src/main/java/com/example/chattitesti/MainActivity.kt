@@ -1,6 +1,7 @@
 package com.example.chattitesti
 import ChatAdapter
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,6 +11,8 @@ import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chattitesti.FirestoreManager
@@ -25,11 +28,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var messageList: RecyclerView
     private lateinit var sendButton: View
     private lateinit var messageInput: EditText
+    private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var messageListener: ListenerRegistration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        applySelectedTheme()
         setContentView(R.layout.activity_main)
 
         adapter = ChatAdapter()
@@ -64,6 +70,14 @@ class MainActivity : AppCompatActivity() {
 
         setupMessageListener()
     }
+    private fun applySelectedTheme() {
+        val isNightModeEnabled = sharedPreferences.getBoolean("night_mode_enabled", false)
+        if (isNightModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+    }
 
     private fun setupMessageListener() {
         messageListener = Firebase.firestore.collection("chat_messages")
@@ -88,15 +102,30 @@ class MainActivity : AppCompatActivity() {
 }
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var notificationSwitch: Switch
+    private lateinit var themeSwitch: Switch
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val isNightModeEnabled = sharedPreferences.getBoolean("night_mode_enabled", false)
+
+        applySelectedTheme()
+
         setContentView(R.layout.settingsactivity)
 
         // Find the switch in the layout
-        val notificationSwitch: Switch = findViewById(R.id.notificationSwitch)
-        val themeSwitch: Switch = findViewById(R.id.themeSwitch)
+        notificationSwitch = findViewById(R.id.notificationSwitch)
+        themeSwitch = findViewById(R.id.themeSwitch)
+
+        themeSwitch.isChecked = isNightModeEnabled
+        updateSwitchTextColors(isNightModeEnabled)
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean("night_mode_enabled", isChecked).apply()
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
@@ -105,10 +134,24 @@ class SettingsActivity : AppCompatActivity() {
             recreate()
         }
 
-        // Implement the switch's OnCheckedChangeListener to handle notifications
-        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            // Handle enabling or disabling notifications based on isChecked value
-            // Save the notification state in SharedPreferences or relevant storage
+            // Implement the switch's OnCheckedChangeListener to handle notifications
+            notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+                // Handle enabling or disabling notifications based on isChecked value
+                // Save the notification state in SharedPreferences or relevant storage
+            }
         }
+    private fun applySelectedTheme() {
+        val isNightModeEnabled = sharedPreferences.getBoolean("night_mode_enabled", false)
+        if (isNightModeEnabled) {
+            setTheme(R.style.SettingsActivityTheme_Dark)
+        } else {
+            setTheme(R.style.SettingsActivityTheme_Light)
+        }
+    }
+    private fun updateSwitchTextColors(isNightModeEnabled: Boolean) {
+        val textColorResId = if (isNightModeEnabled) R.color.white else R.color.black
+        val textColor = ContextCompat.getColor(this, textColorResId)
+        notificationSwitch.setTextColor(textColor)
+        themeSwitch.setTextColor(textColor)
     }
 }

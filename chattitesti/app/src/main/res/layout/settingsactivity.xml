@@ -10,14 +10,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Receive Notifications"
-        android:padding="16dp" />
+        android:padding="16dp"
+        style="@style/SwitchTextStyle"/>
 
     <Switch
         android:id="@+id/themeSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Change Theme"
-        android:padding="16dp" />
+        android:padding="16dp"
+        style="@style/SwitchTextStyle"/>
 
     <!-- Add other settings UI elements if needed -->
 
