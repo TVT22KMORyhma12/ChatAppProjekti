@@ -1,2 +1,3 @@
 # chattemp
-koulu rojektin väliaikane
+
+Projektikurssin ChatAppProjekti-työ
