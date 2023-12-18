@@ -1,27 +1,23 @@
 package com.example.chattitesti
+
 import ChatAdapter
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chattitesti.FirestoreManager
-import com.example.chattitesti.Message
-import com.example.chattitesti.R
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.appcompat.app.AlertDialog
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,10 +47,6 @@ class MainActivity : AppCompatActivity() {
         messageInput = findViewById(R.id.messageInput)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        //Log.d("MainActivity", "Settings Icon Resource ID: $settingsIconResId")
-        //setSupportActionBar(toolbar)
-
-        //toolbar.setNavigationIcon(R.drawable.baseline_settings_black_24)
 
         val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
         settingsIcon.setOnClickListener {
@@ -149,9 +141,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Implement the switch's OnCheckedChangeListener to handle notifications
-        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+        // notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             // Handle enabling or disabling notifications based on isChecked value
             // Save the notification state in SharedPreferences or relevant storage
-        }
+        //}
     }
 }
