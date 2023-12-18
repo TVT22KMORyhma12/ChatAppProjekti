@@ -19,6 +19,11 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.appcompat.app.AlertDialog
+
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: ChatAdapter
@@ -28,9 +33,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var messageListener: ListenerRegistration
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var senderId: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE)
+        senderId = sharedPreferences.getString("senderId", "User") ?: "User"
 
         adapter = ChatAdapter()
 
@@ -57,12 +68,13 @@ class MainActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val messageText = messageInput.text.toString().trim()
             if (messageText.isNotEmpty()) {
-                val message = Message(sender = "User", text = messageText)
+                val message = Message(sender = senderId, text = messageText)
                 FirestoreManager.sendMessage(message, { messageInput.text.clear() }, { /* Handle failure */ })
             }
         }
 
         setupMessageListener()
+        promptUserForSenderId()
     }
 
     private fun setupMessageListener() {
@@ -83,6 +95,33 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+    }
+
+    private fun promptUserForSenderId() {
+        //tarkista onko sender id asetettu, sitten pyydä käyttäjältä id
+        if (senderId == "User") {
+            showSenderIdInputDialog()
+        }
+    }
+    //ensimmäistä kertaa sovellustsa käynnistettäessä näytetään nimen asetusboxi
+    private fun showSenderIdInputDialog() {
+        val inputEditText = EditText(this)
+
+        AlertDialog.Builder(this)
+            .setTitle("Set Username")
+            .setView(inputEditText)
+            .setPositiveButton("OK") { _, _ ->
+                val newSenderId = inputEditText.text.toString().trim()
+                saveSenderId(newSenderId)
+            }
+            .setCancelable(false)
+            .show()
+    }
+    //tallennetaan käyttäjän asettama nimi ettei sitä kysytä joka kerta
+    private fun saveSenderId(newSenderId: String) {
+        senderId = newSenderId
+        sharedPreferences.edit().putString("senderId", senderId).apply()
     }
 
     override fun onDestroy() {
